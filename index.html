@@ -37,6 +37,54 @@
             <p>Discover the best quality tools for every job. From hand tools to power tools, we've got you covered!</p>
         </div>
 
+        <!-- Search and Filter Section -->
+        <div class="search-filter-section">
+            <div class="search-container">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search for tools..." onkeyup="handleSearch()">
+                    <button onclick="handleSearch()"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="priceRange">Price Range:</label>
+                    <select id="priceRange" onchange="applyFilters()">
+                        <option value="">All Prices</option>
+                        <option value="0-25">Under $25</option>
+                        <option value="25-50">$25 - $50</option>
+                        <option value="50-100">$50 - $100</option>
+                        <option value="100+">Over $100</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="ratingFilter">Rating:</label>
+                    <select id="ratingFilter" onchange="applyFilters()">
+                        <option value="">All Ratings</option>
+                        <option value="4.5+">4.5+ Stars</option>
+                        <option value="4.0+">4.0+ Stars</option>
+                        <option value="3.5+">3.5+ Stars</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="sortBy">Sort By:</label>
+                    <select id="sortBy" onchange="applyFilters()">
+                        <option value="default">Default</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Rating: High to Low</option>
+                        <option value="name">Name: A to Z</option>
+                    </select>
+                </div>
+                
+                <button class="clear-filters-btn" onclick="clearFilters()">
+                    <i class="fas fa-times"></i> Clear Filters
+                </button>
+            </div>
+        </div>
+
         <!-- Categories -->
         <div class="categories">
             <button class="category-btn active" onclick="filterProducts('all')">All Tools</button>
@@ -44,6 +92,11 @@
             <button class="category-btn" onclick="filterProducts('power')">Power Tools</button>
             <button class="category-btn" onclick="filterProducts('garden')">Garden Tools</button>
             <button class="category-btn" onclick="filterProducts('automotive')">Automotive</button>
+        </div>
+
+        <!-- Results Counter -->
+        <div class="results-counter" id="resultsCounter">
+            Showing all products
         </div>
 
         <!-- Products Grid -->
@@ -159,6 +212,10 @@
 
         let cart = [];
         let currentFilter = 'all';
+        let searchTerm = '';
+        let priceFilter = '';
+        let ratingFilter = '';
+        let sortBy = 'default';
 
         // Initialize the page
         function init() {
@@ -166,12 +223,84 @@
             updateCartCount();
         }
 
-        // Display products
+        // Display products with search and filtering
         function displayProducts() {
             const grid = document.getElementById('productsGrid');
-            const filteredProducts = currentFilter === 'all' 
-                ? products 
-                : products.filter(p => p.category === currentFilter);
+            const resultsCounter = document.getElementById('resultsCounter');
+            
+            // Apply all filters
+            let filteredProducts = products.filter(product => {
+                // Category filter
+                const categoryMatch = currentFilter === 'all' || product.category === currentFilter;
+                
+                // Search filter
+                const searchMatch = searchTerm === '' || 
+                    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    product.description.toLowerCase().includes(searchTerm.toLowerCase());
+                
+                // Price filter
+                let priceMatch = true;
+                if (priceFilter) {
+                    const price = product.price;
+                    switch(priceFilter) {
+                        case '0-25':
+                            priceMatch = price < 25;
+                            break;
+                        case '25-50':
+                            priceMatch = price >= 25 && price < 50;
+                            break;
+                        case '50-100':
+                            priceMatch = price >= 50 && price < 100;
+                            break;
+                        case '100+':
+                            priceMatch = price >= 100;
+                            break;
+                    }
+                }
+                
+                // Rating filter
+                let ratingMatch = true;
+                if (ratingFilter) {
+                    const rating = parseFloat(ratingFilter);
+                    ratingMatch = product.rating >= rating;
+                }
+                
+                return categoryMatch && searchMatch && priceMatch && ratingMatch;
+            });
+            
+            // Apply sorting
+            filteredProducts.sort((a, b) => {
+                switch(sortBy) {
+                    case 'price-low':
+                        return a.price - b.price;
+                    case 'price-high':
+                        return b.price - a.price;
+                    case 'rating':
+                        return b.rating - a.rating;
+                    case 'name':
+                        return a.name.localeCompare(b.name);
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Update results counter
+            const totalProducts = products.length;
+            const showingProducts = filteredProducts.length;
+            resultsCounter.textContent = `Showing ${showingProducts} of ${totalProducts} products`;
+            
+            // Display products
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>No products found</h3>
+                        <p>Try adjusting your search or filters</p>
+                        <button onclick="clearFilters()" class="clear-filters-btn">Clear All Filters</button>
+                    </div>
+                `;
+                return;
+            }
 
             grid.innerHTML = filteredProducts.map(product => `
                 <div class="product-card" onclick="openProductModal(${product.id})">
@@ -194,7 +323,44 @@
             `).join('');
         }
 
-        // Filter products
+        // Search function
+        function handleSearch() {
+            searchTerm = document.getElementById('searchInput').value.trim();
+            displayProducts();
+        }
+
+        // Apply filters
+        function applyFilters() {
+            priceFilter = document.getElementById('priceRange').value;
+            ratingFilter = document.getElementById('ratingFilter').value;
+            sortBy = document.getElementById('sortBy').value;
+            displayProducts();
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            searchTerm = '';
+            priceFilter = '';
+            ratingFilter = '';
+            sortBy = 'default';
+            currentFilter = 'all';
+            
+            // Reset form elements
+            document.getElementById('searchInput').value = '';
+            document.getElementById('priceRange').value = '';
+            document.getElementById('ratingFilter').value = '';
+            document.getElementById('sortBy').value = 'default';
+            
+            // Reset category buttons
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.category-btn').classList.add('active');
+            
+            displayProducts();
+        }
+
+        // Filter products by category
         function filterProducts(category) {
             currentFilter = category;
             
