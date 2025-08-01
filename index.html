@@ -68,6 +68,18 @@
         </div>
     </div>
 
+    <!-- Product Details Modal -->
+    <div class="product-modal" id="productModal">
+        <div class="product-modal-content">
+            <div class="product-modal-header">
+                <button class="close-product" onclick="closeProductModal()">&times;</button>
+            </div>
+            <div class="product-modal-body" id="productModalBody">
+                <!-- Product details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
     <script>
         // Product data
         const products = [
@@ -162,7 +174,7 @@
                 : products.filter(p => p.category === currentFilter);
 
             grid.innerHTML = filteredProducts.map(product => `
-                <div class="product-card">
+                <div class="product-card" onclick="openProductModal(${product.id})">
                     <div class="product-image">
                         ${product.icon}
                     </div>
@@ -174,7 +186,7 @@
                             ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5-Math.floor(product.rating))} 
                             (${product.rating})
                         </div>
-                        <button class="add-to-cart-btn" onclick="addToCart(${product.id})">
+                        <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart(${product.id})">
                             <i class="fas fa-cart-plus"></i> Add to Cart
                         </button>
                     </div>
@@ -274,6 +286,81 @@
         document.getElementById('cartModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 toggleCart();
+            }
+        });
+
+        // Product Modal Functions
+        function openProductModal(productId) {
+            const product = products.find(p => p.id === productId);
+            const modal = document.getElementById('productModal');
+            const modalBody = document.getElementById('productModalBody');
+            
+            modalBody.innerHTML = `
+                <div class="product-details">
+                    <div class="product-details-image">
+                        <div class="product-details-icon">${product.icon}</div>
+                    </div>
+                    <div class="product-details-info">
+                        <h2 class="product-details-title">${product.name}</h2>
+                        <div class="product-details-rating">
+                            ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5-Math.floor(product.rating))} 
+                            <span class="rating-text">(${product.rating} out of 5)</span>
+                        </div>
+                        <div class="product-details-price">$${product.price.toFixed(2)}</div>
+                        <div class="product-details-description">
+                            <h3>Description</h3>
+                            <p>${product.description}</p>
+                        </div>
+                        <div class="product-details-specs">
+                            <h3>Specifications</h3>
+                            <ul>
+                                <li><strong>Category:</strong> ${getCategoryName(product.category)}</li>
+                                <li><strong>Brand:</strong> ToolMaster Pro</li>
+                                <li><strong>Warranty:</strong> 2 Years</li>
+                                <li><strong>Shipping:</strong> Free on orders over $50</li>
+                                <li><strong>Return Policy:</strong> 30 days</li>
+                            </ul>
+                        </div>
+                        <div class="product-details-actions">
+                            <button class="add-to-cart-large" onclick="addToCart(${product.id}); closeProductModal();">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                            <button class="wishlist-btn" onclick="addToWishlist(${product.id})">
+                                <i class="fas fa-heart"></i> Add to Wishlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProductModal() {
+            const modal = document.getElementById('productModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function getCategoryName(category) {
+            const categories = {
+                'hand': 'Hand Tools',
+                'power': 'Power Tools',
+                'garden': 'Garden Tools',
+                'automotive': 'Automotive Tools'
+            };
+            return categories[category] || 'Tools';
+        }
+
+        function addToWishlist(productId) {
+            showNotification('Product added to wishlist! 💝');
+        }
+
+        // Close product modal when clicking outside
+        document.getElementById('productModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProductModal();
             }
         });
 
