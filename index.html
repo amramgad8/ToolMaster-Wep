@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToolMaster - Premium Tools Store</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-bar button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #3498db;
+            border: none;
+            color: white;
+            padding: 0.6rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #3498db;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+        }
+
+        .category-btn {
+            background: white;
+            border: 2px solid #e9ecef;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #6c757d;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .product-description {
+            color: #6c757d;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 1rem;
+        }
+
+        .product-rating {
+            color: #f39c12;
+            margin-bottom: 1rem;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background: linear-gradient(45deg, #2980b9, #1f5f8b);
+        }
+
+        /* Cart Modal */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .cart-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .cart-items {
+            margin-bottom: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .cart-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #e9ecef;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .search-bar {
+                margin: 0;
+                max-width: 100%;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-tools"></i> ToolMaster
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for tools...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <div class="cart-icon" onclick="toggleCart()">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1>Premium Tools for Professionals</h1>
+            <p>Discover the best quality tools for every job. From hand tools to power tools, we've got you covered!</p>
+        </div>
+
+        <!-- Categories -->
+        <div class="categories">
+            <button class="category-btn active" onclick="filterProducts('all')">All Tools</button>
+            <button class="category-btn" onclick="filterProducts('hand')">Hand Tools</button>
+            <button class="category-btn" onclick="filterProducts('power')">Power Tools</button>
+            <button class="category-btn" onclick="filterProducts('garden')">Garden Tools</button>
+            <button class="category-btn" onclick="filterProducts('automotive')">Automotive</button>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>Shopping Cart</h2>
+                <button class="close-cart" onclick="toggleCart()">&times;</button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <!-- Cart items will be displayed here -->
+            </div>
+            <div class="cart-total" id="cartTotal">
+                Total: $0.00
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Product data
+        const products = [
+            {
+                id: 1,
+                name: "Professional Hammer Set",
+                description: "High-quality steel hammer with ergonomic handle",
+                price: 29.99,
+                category: "hand",
+                rating: 4.5,
+                icon: "🔨"
+            },
+            {
+                id: 2,
+                name: "Cordless Drill Kit",
+                description: "20V lithium-ion drill with 2 batteries and charger",
+                price: 89.99,
+                category: "power",
+                rating: 4.8,
+                icon: "🔧"
+            },
+            {
+                id: 3,
+                name: "Garden Shovel Set",
+                description: "Sturdy garden tools for all your landscaping needs",
+                price: 45.99,
+                category: "garden",
+                rating: 4.3,
+                icon: "🌱"
+            },
+            {
+                id: 4,
+                name: "Socket Wrench Set",
+                description: "Complete metric and imperial socket set",
+                price: 67.99,
+                category: "automotive",
+                rating: 4.6,
+                icon: "🔩"
+            },
+            {
+                id: 5,
+                name: "Circular Saw",
+                description: "Powerful 7-1/4 inch circular saw with laser guide",
+                price: 129.99,
+                category: "power",
+                rating: 4.7,
+                icon: "⚡"
+            },
+            {
+                id: 6,
+                name: "Screwdriver Set",
+                description: "Professional screwdriver set with magnetic tips",
+                price: 24.99,
+                category: "hand",
+                rating: 4.4,
+                icon: "🪛"
+            },
+            {
+                id: 7,
+                name: "Pruning Shears",
+                description: "Sharp bypass pruners for clean cuts",
+                price: 19.99,
+                category: "garden",
+                rating: 4.2,
+                icon: "✂️"
+            },
+            {
+                id: 8,
+                name: "Oil Filter Wrench",
+                description: "Adjustable oil filter wrench for easy removal",
+                price: 15.99,
+                category: "automotive",
+                rating: 4.1,
+                icon: "🔧"
+            }
+        ];
+
+        let cart = [];
+        let currentFilter = 'all';
+
+        // Initialize the page
+        function init() {
+            displayProducts();
+            updateCartCount();
+        }
+
+        // Display products
+        function displayProducts() {
+            const grid = document.getElementById('productsGrid');
+            const filteredProducts = currentFilter === 'all' 
+                ? products 
+                : products.filter(p => p.category === currentFilter);
+
+            grid.innerHTML = filteredProducts.map(product => `
+                <div class="product-card">
+                    <div class="product-image">
+                        ${product.icon}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-description">${product.description}</div>
+                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <div class="product-rating">
+                            ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5-Math.floor(product.rating))} 
+                            (${product.rating})
+                        </div>
+                        <button class="add-to-cart-btn" onclick="addToCart(${product.id})">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter products
+        function filterProducts(category) {
+            currentFilter = category;
+            
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayProducts();
+        }
+
+        // Add to cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            
+            updateCartCount();
+            updateCartDisplay();
+            
+            // Show success message
+            showNotification(`${product.name} added to cart!`);
+        }
+
+        // Update cart count
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        // Update cart display
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p>Your cart is empty</p>';
+                cartTotal.textContent = 'Total: $0.00';
+                return;
+            }
+            
+            cartItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div>
+                        <strong>${item.name}</strong><br>
+                        <small>$${item.price.toFixed(2)} x ${item.quantity}</small>
+                    </div>
+                    <div>
+                        <button onclick="removeFromCart(${item.id})" style="background: #e74c3c; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer;">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        // Remove from cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartCount();
+            updateCartDisplay();
+        }
+
+        // Toggle cart modal
+        function toggleCart() {
+            const modal = document.getElementById('cartModal');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+            updateCartDisplay();
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #27ae60;
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 8px;
+                z-index: 3000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Close cart when clicking outside
+        document.getElementById('cartModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                toggleCart();
+            }
+        });
+
+        // Initialize when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
