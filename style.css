@@ -267,6 +267,9 @@ body {
     box-shadow: var(--shadow);
     transition: var(--transition);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 450px;
 }
 
 .product-card::before {
@@ -300,6 +303,7 @@ body {
     font-size: 3rem;
     color: var(--medium-gray);
     transition: var(--transition);
+    line-height: 1;
 }
 
 .product-card:hover .product-image {
@@ -309,6 +313,9 @@ body {
 
 .product-info {
     padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .product-title {
@@ -352,6 +359,13 @@ body {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 48px;
+    box-sizing: border-box;
+    margin-top: auto;
 }
 
 .add-to-cart-btn::before {
@@ -373,6 +387,7 @@ body {
     background: linear-gradient(45deg, var(--primary-dark), #1f5f8b);
     transform: translateY(-2px);
     box-shadow: var(--shadow);
+    height: 48px;
 }
 
 /* Cart Modal */
